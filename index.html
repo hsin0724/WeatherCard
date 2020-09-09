@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天氣卡面</title>
+
+    <style>
+
+        *{
+            box-sizing: border-box;
+        }
+
+        .cards{
+            display: flex;
+            padding: 30px 100px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .card{
+            width: 20%;
+            border-radius: 3%;
+            margin: 20px;
+            box-shadow: 1px 9px 20px  rgb(200, 200, 200);
+        }
+
+        .card-top{
+            width: 100%;
+            background-color: rgb(255, 232, 155);
+            border-radius: 3% 3% 0 0;
+            color: rgb(47, 47, 47,0.7);
+            padding: 30px 10px 20px 30px;
+            display: flex;
+            justify-content:space-between
+        }
+
+        /* .left{
+            width: 30%;
+        } */
+
+        .right>p{
+            margin: 0px 30px 0 0;
+            font-family: Arial, Helvetica, sans-serif, 微軟正黑體;
+            font-weight: 600;
+            font-size: 18px;
+
+            display: flex;
+            justify-content:flex-end
+        }
+
+        .card-down{
+            width: 100%;
+            padding: 15px;
+        }
+
+        h1{
+            font-size: 60px;
+            font-weight: 100;
+            font-family:sans-serif;
+            margin: 0;
+        }
+
+       
+        .card-down>p{
+            margin: 0px 20px;
+            font-family: Arial, Helvetica, sans-serif, 微軟正黑體;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 30px;
+            color: gray;
+        }
+
+        span{
+            float: right;
+            color: rgb(97, 97, 97);
+            font-weight: 600;
+        }
+
+        /* .sunny{
+            background-color: rgb(255, 232, 155);
+        }
+
+        .cloudy{
+            background-color: rgb(141, 142, 170);
+        }
+
+        .rain{
+            background-color: rgb(143, 202, 230);
+        } */
+
+    </style>
+
+</head>
+
+
+<body>
+    <div class="cards">
+      
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+
+    <script>
+      
+        var cards = document.querySelector('.cards')
+        var sun = '<img width=90px src="./img/sun.png" alt="晴天">'
+        var rain = '<img width=100px src="./img/rain.png" alt="雨天">'
+        var cloudy = '<img width=100px src="./img/cloudy.png" alt="陰天">'
+       
+        axios.get('https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-B5282D9D-8FDD-40E9-AD48-B1DF3270465D')
+            
+            .then(function (response) {
+
+                var response_data = response.data;
+                console.log(response_data);
+                  
+
+                var locations = response.data.records.location;
+                locations.forEach(single_location => {
+
+                    var locationName = single_location.locationName
+                    var Wx = single_location.weatherElement[0].time[0].parameter.parameterName
+                    var MaxT = single_location.weatherElement[4].time[0].parameter.parameterName
+                    var MinT = single_location.weatherElement[2].time[0].parameter.parameterName
+                    var PoP = single_location.weatherElement[1].time[0].parameter.parameterName
+                    var CI = single_location.weatherElement[3].time[0].parameter.parameterName
+
+                    if (PoP > 50) {
+                        weather_pic = rain
+                    } else if (PoP <10){
+                        weather_pic = sun
+                    }else{
+                        weather_pic = cloudy
+                    }
+
+
+                    cards.innerHTML = cards.innerHTML +
+                        `<div class="card">
+                            <div class="card-top">
+
+                                <div class="left">
+                                    ${weather_pic}
+                                </div>
+
+                                <div class="right">
+                                    <h1> ${MaxT}°</h1>
+                                    <p>${Wx}</p>
+                                    <p>${locationName}</p>
+                                </div>
+                                
+                            </div>
+
+                            <div class="card-down">
+                                <p>天氣狀況  <span>${CI}</span></p>
+                                <p>最高 / 最低溫度  <span>${MaxT}° / ${MinT}° </span></p>                               
+                                <p>降雨機率  <span>${PoP}%</span></p>
+                            </div>
+                        </div>
+                        `
+                });
+
+            })
+
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+    </script>
+
+</body>
+
+
+</html>
